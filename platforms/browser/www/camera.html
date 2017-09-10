@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; media-src *" />
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <style>
+      .photo { /* set relative picture size */
+        max-width: 90%;
+        max-height: 70%;
+        padding: 3px;
+        margin-bottom: 0px;
+        display: block;
+        margin: auto;
+      }
+      button {
+        margin:5px;
+      }
+    </style>
+    <title>Camera App</title>
+  </head>
+  
+  <body>
+    <div class="container-fluid">
+      <button type="button" class="btn btn-lg btn-primary" id="btn_camera">Foto erstellen</button>
+      <button type="button" class="btn btn-lg btn-success pull-right" id="btn_upload">Speichern</button>
+      <hr>
+      <div>
+        <img src="" id="img_camera" class="photo"></img>  
+      </div>
+    </div>
+    <script src="assets/js/jquery-2.1.4.min.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="cordova.js"></script>
+
+    <script type="text/javascript">
+      /* global $ Camera navigator */
+      $(function () {
+        var uploadServer = 'https://externalfiles-franzgusenbauer.c9users.io/upload';
+        function camSuccess(imgData) {
+          $("#img_camera").attr("src", imgData);
+        }
+        
+        function camError(error) {
+          alert('Failed because: ' + error);
+        }
+        
+        function accessCamera() {
+          navigator.camera.getPicture(camSuccess, camError, { quality: 75,
+            sourceType: Camera.PictureSourceType.CAMERA,
+            destinationType: Camera.DestinationType.FILE_URI,
+            targetWidth: 1280,
+            targetHeight: 1280,
+            encodingType: Camera.EncodingType.JPEG,
+            allowEdit: false,
+            correctOrientation: true,
+            saveToPhotoAlbum: false 
+          });
+        }
+        function alertDismissed() {
+          // body...
+        }
+        function saveImg() {
+          var retries = 0;
+          var fileURI = ($("#img_camera").attr("src"));
+          var win = function (r) {
+              navigator.camera.cleanup();
+              retries = 0;
+              navigator.notification.alert(
+                  'Foto erfolgreich hochgeladen!',  // message
+                  alertDismissed,         // callback
+                  'Upload Server',            // title
+                  'OK'                    // buttonName
+              );
+          }
+          var fail = function (error) {
+              if (retries == 0) {
+                  retries ++
+                  setTimeout(function() {
+                      saveImg()
+                  }, 1000)
+              } else {
+                  retries = 0;
+                  navigator.camera.cleanup();
+                  alert('Upload fehlgeschlagen ' + JSON.stringify(error));
+              }
+          }
+       
+          var options = new FileUploadOptions();
+          options.fileKey = "file";
+          options.fileName = fileURI.substr(fileURI.lastIndexOf('/') + 1);
+          options.mimeType = "image/jpeg";
+          options.params = {}; // if we need to send parameters to the server request
+          options.chunkedMode = false;
+          options.headers = {
+            "Access-Control-Allow-Origin": "*"
+          };
+          options.httpMethod = 'POST';
+          options.trustAllHosts = true;
+          options.params = {'test': 'test55'}; 
+          var ft = new FileTransfer();
+          ft.upload(fileURI, encodeURI(uploadServer), win, fail, options);
+        }
+
+        
+        $("#btn_camera").on('click', accessCamera);
+        $("#btn_upload").on('click', saveImg);
+      });
+        
+    </script>
+  </body>
+
+</html>
+
+

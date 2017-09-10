@@ -1,0 +1,1 @@
+rsync -avz -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" --progress /home/qgem/client/qgem-mobile/ qgem.at:/home/qgem/client/qgem-mobile
