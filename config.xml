@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.gusenbauer.camera-app" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
-    <name>helloworld</name>
+    <name>GemSpider</name>
     <description>
-        Camera-App
+        GemSpider
     </description>
-    <author email="support@phonegap.com" href="http://phonegap.com">
+    <author email="office@gemspider.at" href="http://www.gemspider.at">
         PhoneGap Team
     </author>
     <content src="index.html" />

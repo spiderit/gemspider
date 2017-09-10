@@ -1,9 +1,8 @@
 git init
-git remote add origin https://github.com/spiderit/gemspider
 git add .
-git commit -m "Initial commit"
+git commit -m "first commit"
+git remote add origin https://github.com/spiderit/gemspider.git
 git push -u origin master
-
 
 CAMERA 0
 http://docs.phonegap.com/en/2.9.0/cordova_camera_camera.md.html#cameraOptions
