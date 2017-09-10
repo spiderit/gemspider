@@ -6,11 +6,11 @@
     <feature name="Device">
         <param name="browser-package" value="Device" />
     </feature>
-    <name>helloworld</name>
+    <name>GemSpider</name>
     <description>
-        Camera-App
+        GemSpider
     </description>
-    <author email="support@phonegap.com" href="http://phonegap.com">
+    <author email="office@gemspider.at" href="http://www.gemspider.at">
         PhoneGap Team
     </author>
     <content src="index.html" />
