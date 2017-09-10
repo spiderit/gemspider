@@ -98,20 +98,12 @@ vectoropts.kanal = {
   }
 }
 
-function createModalFields(feature) {
-  if ($("#fachschale").val() == 'kanal') {
-    createModalFieldsKanal(feature.target);
-  }
-  if ($("#fachschale").val() == 'wasser') {
-    createModalFieldsWasser(feature.target);
-  }
-}
 
-function createModalFieldsKanal(e) {
-    if (e.feature) {
-      var feature =  e.feature;
-
-      $.getJSON(baseUrl + "/kanal/wartungen?id=eq." + feature.properties.id + "&select=*,wartungsparameterwerte{*,wartungsparameter_id{*}}&wartungsparameterwerte.order=wartungsparameter_id.sortierung.asc", function (data) {
+function createModalFields(e) {
+    var fachschale = $("#fachschale").val();
+    if (e.target.feature) {
+      var feature =  e.target.feature;
+      $.getJSON(baseUrl + "/" + fachschale + "/wartungen?id=eq." + feature.properties.id + "&select=*,wartungsparameterwerte{*,wartungsparameter_id{*}}&wartungsparameterwerte.order=wartungsparameter_id.sortierung.asc", function (data) {
         if (data.length > 0) {
           var wartung = data[0];
           wartung.checkWert = function () {
@@ -124,7 +116,7 @@ function createModalFieldsKanal(e) {
 
           $("#feature-title").html(feature.properties.wartungsart + " für " + feature.properties.objekttyp + " " + feature.properties.objektname);
           var template = '\
-            <ul class="nav nav-tabs"> \
+            <ul class="nav nav-pills"> \
               <li class="active"><a data-toggle="tab" href="#sectionA">Allgemein</a></li> \
               <li><a data-toggle="tab" href="#sectionB">Beobachtungen</a></li> \
               <li><a data-toggle="tab" href="#sectionC">Folgetätigkeiten</a></li> \
@@ -132,23 +124,23 @@ function createModalFieldsKanal(e) {
             <div class="tab-content"> \
               <div id="sectionA" class="tab-pane fade in active"> \
                 <div class="form-group"> \
-                  <label class="control-label col-sm-2" for="datum">Datum</label> \
+                  <label for="datum">Datum</label> \
                   <input type="date" class="form-control" id="datum" value="{{datum}}"> \
                 </div> \
                 <div class="form-group"> \
                   <label for="status">Status</label> \
                   <select class="form-control" id="status"><option value="0">in Bearbeitung</option><option value="1">fertig</option>{{status}}</select> \
                 </div> \
-                <div class="row"> \
-                <div class="form-group col-sm-4"> \
+                <div id="funktion-gerinne-schacht" class="row"> \
+                <div class="form-group col-xs-4"> \
                   <label for="funktion">Funktion</label> \
                   <input type="number" class="form-control" id="funktion" min="1" max="5" required value="{{funktion}}"> \
                 </div> \
-                <div class="form-group col-sm-4"> \
+                <div class="form-group col-xs-4"> \
                   <label for="gerinne">Gerinne</label> \
                   <input type="number" class="form-control" id="gerinne" min="1" max="5" required value="{{gerinne}}"> \
                 </div> \
-                <div class="form-group col-sm-4"> \
+                <div class="form-group col-xs-4"> \
                   <label for="schacht">Schacht</label> \
                   <input type="number" class="form-control" id="schacht" min="1" max="5" required value="{{schacht}}"> \
                 </div> \
@@ -170,7 +162,7 @@ function createModalFieldsKanal(e) {
                 <form class="form">{{#wartungsparameterwerte}} \
                   <div class="form-group" id="folgetaetigkeit_{{id}}"> \
                     <label for="{{id}}" class="control-label" >{{wartungsparameter_id.name}}</label> \
-                    <select class="form-control" data-selected="{{folgetaetigkeit}}" id="folgetaetigkeit_select_{{id}}"><option value=""></option><option value="Inspektion">Inspektion</option><option value="Reinigung">Reinigung</option><option value="Sanierung">Sanierung</option>{{folgetaetigkeit}}</select> \
+                    <select class="form-control" data-selected="{{folgetaetigkeit}}" id="folgetaetigkeit_select_{{id}}"><option value="-"></option><option value="Inspektion">Inspektion</option><option value="Reinigung">Reinigung</option><option value="Sanierung">Sanierung</option>{{folgetaetigkeit}}</select> \
                   </div> \
                 {{/wartungsparameterwerte}} </form> \
                 <div class="form-group"> <br><hr>\
@@ -185,12 +177,13 @@ function createModalFieldsKanal(e) {
             </div>';
     
 
-          
           $("#feature-info").html(Mustache.render(template, wartung));
+          // Selected Option
           $('[data-selected]').find("option").filter(function() {
-               return $(this).text() == $(this).parent().data('selected');  
+            return $(this).text() == $(this).parent().data('selected');  
           }).attr('selected',true);
           
+          // Folgetätigkeiten
           $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
             var target = $(e.target).attr("href") // activated tab
             if (target === '#sectionC') {
@@ -204,10 +197,15 @@ function createModalFieldsKanal(e) {
             }
           });
           
+          // Schacht Gerinne bei Wasser verbergen
+          if (fachschale === 'wasser') {
+            $("#funktion-gerinne-schacht").hide();
+          } 
+          
+          
           $("#feature-info").find('option[value=' + wartung.status +']').attr('selected', true);
           $("#feature-info").find('option[value=' + wartung.wetter +']').attr('selected', true);
-          $("#feature-info").find('option[value=' + wartung.folgetaetigkeit +']').attr('selected', true);
-                  
+
           $("[name='my-checkbox']").bootstrapSwitch();
           $("#featureModal").modal("show");
           highlight.clearLayers().addLayer(L.circleMarker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], highlightStyle));
@@ -222,8 +220,10 @@ function createModalFieldsKanal(e) {
                 wartung[$(this).prop("id")] = $(this).prop("value");
               }
             });
+            wartung.erfuellt_am = $('#erfuellt_am').prop("value");
+            wartung.erfuellt_von = $('#erfuellt_von').prop("value");
             $.ajax({
-              url: baseUrl + '/kanal/wartungen?id=eq.' + feature.properties.id,
+              url: baseUrl + '/' + fachschale + '/wartungen?id=eq.' + feature.properties.id,
               method: 'PATCH',
               dataType: "xml/html/script/json", // expected format for response
               contentType: "application/json", // send as JSON
@@ -241,7 +241,7 @@ function createModalFieldsKanal(e) {
                     }
   
                     $.ajax({
-                      url: baseUrl + '/kanal/wartungsparameterwerte?id=eq.' + id,
+                      url: baseUrl + '/' + fachschale + '/wartungsparameterwerte?id=eq.' + id,
                       method: 'PATCH',
                       dataType: "xml/html/script/json", // expected format for response
                       contentType: "application/json", // send as JSON
@@ -253,8 +253,8 @@ function createModalFieldsKanal(e) {
                   }
                 });
                 var marker = ['assets/img/marker-icon-blue.png', 'assets/img/marker-icon-green.png'];
-                e.defaultOptions.icon.options.iconUrl = marker[wartung.status];
-                e.setIcon(e.defaultOptions.icon);
+                e.target.defaultOptions.icon.options.iconUrl = marker[wartung.status];
+                e.target.setIcon(e.target.defaultOptions.icon);
               }
             });
           })
@@ -356,62 +356,6 @@ vectoropts.wasser = {
   }
     return style;
   }
-}
-
-
-function createModalFieldsWasser(feature) {
-  return "<ul class='nav nav-tabs'>" + 
-        "<li class='active'><a data-toggle='tab' href='#sectionA'>Allgemein</a></li>" +
-        "<li><a data-toggle='tab' href='#sectionB'>Beobachtungen</a></li>" +
-        "<li><a data-toggle='tab' href='#sectionC'>Beobachtungen</a></li>" +
-    "</ul>" +
-    "<div class='tab-content'>" +
-        "<div id='sectionA' class='tab-pane fade in active'>" +
-          "<table class='table table-striped table-bordered table-condensed'>" + 
-          "<tr><th>Wartungsart</th><td>" + feature.properties.wartungsart + "</td></tr>" + 
-          "<tr><th>Datum</th><td>" + feature.properties.datum + "</td></tr>" + 
-          "<tr><th>Objekttyp</th><td>" + feature.properties.objekttyp + "</td></tr>" + 
-          "<tr><th>Objektname</th><td>" + feature.properties.objektname + "</td></tr>" + 
-          "<tr><th>Eingangstüre sperrbar</th><td>" + feature.properties.eingangstuere_sperrbar + "</td></tr>" + 
-          "<tr><th>Eingangstüre korrodiert</th><td>" + feature.properties.eingangstuere_korrodiert + "</td></tr>" + 
-          "<tr><th>Lüftungsschutz</th><td>" + feature.properties.lueftungsschutz + "</td></tr>" + 
-          "<tr><th>Überdeckung</th><td>" + feature.properties.ueberdeckung + "</td></tr>" +
-          "<tr><th>Bewuchs</th><td>" + feature.properties.bewuchs + "</td></tr>" +
-          "<tr><th>Attika Geländer</th><td>" + feature.properties.attika_gelaender + "</td></tr>" +
-          "<tr><th>Bauwerkszustand</th><td>" + feature.properties.bauwerk_zustand + "</td></tr>" +
-         "</table>" +
-        "</div>" +
-        "<div id='sectionB' class='tab-pane fade'>" +
-          "<table class='table table-striped table-bordered table-condensed'>" + 
-          "<tr><th>Bauwerk Risse</th><td>" + feature.properties.bauwerk_risse + "</td></tr>" + 
-          "<tr><th>Bauwerk Sinter</th><td>" + feature.properties.bauwerk_sinter + "</td></tr>" + 
-          "<tr><th>Überlauf</th><td>" + feature.properties.ueberlauf + "</td></tr>" + 
-          "<tr><th>Froschklappe</th><td>" + feature.properties.froschklappe + "</td></tr>" + 
-          "<tr><th>Schieberkammer Zustand</th><td>" + feature.properties.schieberkammer_zustand + "</td></tr>" + 
-          "<tr><th>Schieberkammer Risse</th><td>" + feature.properties.schieberkammer_risse + "</td></tr>" + 
-          "<tr><th>Schieberkammer Sinter</th><td>" + feature.properties.schieberkammer_sinter + "</td></tr>" +
-          "<tr><th>Schieberkammer Entlüftung</th><td>" + feature.properties.schieberkammer_entlueftung + "</td></tr>" +
-          "<tr><th>Schieberkammer Insektenschutz</th><td>" + feature.properties.schieberkammer_insektenschutz + "</td></tr>" +
-          "<tr><th>Armaturen gängig</th><td>" + feature.properties.armaturen_gaengig + "</td></tr>" +
-          "<tr><th>Armaturen dicht</th><td>" + feature.properties.armaturen_dicht + "</td></tr>" +
-         "</table>" +
-        "</div>" +
-        "<div id='sectionC' class='tab-pane fade'>" +
-          "<table class='table table-striped table-bordered table-condensed'>" + 
-          "<tr><th>Armaturen korrodiert</th><td>" + feature.properties.armaturen_korrodiert + "</td></tr>" + 
-          "<tr><th>Rohre dicht</th><td>" + feature.properties.rohre_dicht + "</td></tr>" + 
-          "<tr><th>Rohre korrodiert</th><td>" + feature.properties.rohre_korrodiert + "</td></tr>" + 
-          "<tr><th>Einstiegsleiter Bügel</th><td>" + feature.properties.einstiegsleiter_buegel + "</td></tr>" + 
-          "<tr><th>Wasserkammerzustand innen</th><td>" + feature.properties.wasserkammer_zustand_innen + "</td></tr>" + 
-          "<tr><th>Wasserkammer Zustand Oberfläche</th><td>" + feature.properties.wasserkammer_zustand_oberflaeche + "</td></tr>" + 
-          "<tr><th>Wasserkammer Risse</th><td>" + feature.properties.wasserkammer_risse + "</td></tr>" +
-          "<tr><th>Wasserkammer Sinter</th><td>" + feature.properties.wasserkammer_sinter + "</td></tr>" +
-          "<tr><th>Wasserkammer Entleuftung</th><td>" + feature.properties.wasserkammer_entleuftung + "</td></tr>" +
-          "<tr><th>Wasserkammer Ablagerungen</th><td>" + feature.properties.wasserkammer_ablagerungen + "</td></tr>" +
-          "<tr><th>Freier Text</th><td>" + feature.properties.freier_text + "</td></tr>" +
-         "</table>" +
-        "</div>" +
-    "</div>";
 }
 
 
