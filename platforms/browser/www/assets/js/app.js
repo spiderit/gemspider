@@ -70,6 +70,8 @@ $(document).on("click", "#loginStart", login);
 
 // Login Funktion
 function login (e) {
+  alert(baseUrl);
+
   $("#projektnummer").val(numberPadding($("#projektnummer").val(), 3));
   $.post(baseUrl + "/login/jwt", 
     {
@@ -79,6 +81,7 @@ function login (e) {
       kennwort: $("#kennwort").val()
     }, 
     function (data, status) {
+      alert(data);
       if (data.result === true){
         $("#loading").css("visibility", "visible");
         // Store Settings in local storage 
@@ -136,8 +139,11 @@ function login (e) {
       } else {
         alert("Anmeldung fehlgeschlagen!");
       }; 
-    });
-  }
+    }
+    ).fail(function (error) {
+      alert(error.responseJSON)
+    })
+  };
 
 document.getElementById('map').style.cursor = 'pointer'
 
