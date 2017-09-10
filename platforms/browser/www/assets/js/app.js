@@ -281,7 +281,7 @@ var mapBaseMap = L.tileLayer("https://maps{s}.wien.gv.at/basemap/geolandbasemap/
 //  attribution: 'Datenquelle: <a href="https://www.esri.com/">Esri</a>, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community;'
 //});	
 
-var grundstuecke = L.tileLayer.wms('https://wsa.bev.gv.at/GeoServer/Interceptor/Wms/CP/INSPIRE_KUNDEN-8ea742f7-0059-4144-b77b-2dc21df14469', {
+var grundstuecke = L.tileLayer.wms('https://wsa.bev.gv.at/GeoServer/Interceptor/Wms/CP/INSPIRE_KUNDEN-03a602b7-8a1b-472c-9fc3-f56b3b3c34b1', {
 	minZoom: 17,
 	maxZoom: 24,
 	layers: '3',
@@ -290,7 +290,7 @@ var grundstuecke = L.tileLayer.wms('https://wsa.bev.gv.at/GeoServer/Interceptor/
 	attribution: "BEV Grundstücksgrenzen"
 })
 
-var gemeinden = L.tileLayer.wms('https://wsa.bev.gv.at/GeoServer/Interceptor/Wms/AU/INSPIRE_KUNDEN-af431939-dcda-4a89-83a5-1fece64a7c6f', {
+var gemeinden = L.tileLayer.wms('https://wsa.bev.gv.at/GeoServer/Interceptor/Wms/AU/INSPIRE_KUNDEN-03a602b7-8a1b-472c-9fc3-f56b3b3c34b1', {
 	maxZoom: 20,
 	layers: '2',
 	format: 'image/png',

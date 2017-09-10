@@ -176,7 +176,7 @@ input[type="radio"], input[type="checkbox"] {
 .tab-pane { padding-top: 10px; }
 
 .modal-dialog {
-  margin: 0px;
+  margin: 0px auto;
 }
 
 .modal-header {
