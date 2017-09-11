@@ -114,7 +114,7 @@ function createModalFields(e) {
           if (!(wartung).erfuellt_am)
             (wartung).erfuellt_am = moment().format('YYYY-MM-DD');
 
-          $("#feature-title").html(feature.properties.wartungsart + " für " + feature.properties.objekttyp + " " + feature.properties.objektname);
+          $("#feature-title").html(feature.properties.wartungsart + " für " + feature.properties.objektname);
           var template = '\
             <ul class="nav nav-pills"> \
               <li class="active"><a data-toggle="tab" href="#sectionA">Allgemein</a></li> \

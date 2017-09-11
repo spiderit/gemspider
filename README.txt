@@ -5,7 +5,8 @@ git remote add origin https://github.com/spiderit/demo.git
 git push -u origin master
 
 
-ICONS
+ICONS AND SPLASH
+http://phonegap.appiq.software/
 http://apetools.webprofusion.com/tools/imagegorilla
 
  
