@@ -50,7 +50,7 @@
     <plugin name="cordova-plugin-vibration" source="npm" spec="~2.1.0" />
     <plugin name="cordova-plugin-whitelist" source="npm" spec="~1.2.1" />
     <plugin name="cordova-plugin-camera" spec="~2.1.1" />
-    <plugin name="cordova-plugin-crosswalk-webview" spec="~2.3.0" />
+    <!--<plugin name="cordova-plugin-crosswalk-webview" spec="~2.3.0" />-->
     
     <preference name="SplashScreen" value="screen" />
     <platform name="android">
