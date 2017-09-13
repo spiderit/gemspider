@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.gusenbauer.camera-app" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
-    <name>GemSpider</name>
+<widget id="at.spider-it.gemspider" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
+    <name>gemspider</name>
     <description>
-        GemSpider
+        gemspider - spielend deine Netze betreiben
     </description>
     <author email="office@gemspider.at" href="http://www.gemspider.at">
-        PhoneGap Team
+        Spider-It Solution
     </author>
     <content src="index.html" />
     <access origin="*" />
@@ -25,7 +25,7 @@
     <!--<preference name="BackgroundColor" value="0xff0000ff"/>-->
     <!--<preference name="HideKeyboardFormAccessoryBar" value="true"/>-->
     
-    <preference name="SplashScreenDelay" value="2000" /> 
+    <preference name="SplashScreenDelay" value="3000" /> 
     <preference name="AutoHideSplashScreen" value="true" />
     <preference name="FadeSplashScreenDuration" value="750"/>
     <preference name="ShowSplashScreenSpinner" value="false"/>
@@ -55,10 +55,7 @@
     <!--<plugin name="cordova-plugin-media" source="npm" spec="~2.2.0" />-->
     <!--<plugin name="cordova-plugin-network-information" source="npm" spec="~1.2.0" />-->
     <!--<plugin name="cordova-plugin-contacts" source="npm" spec="~2.0.1" />-->
-    
-    
-    <preference name="SplashScreen" value="splash" />
-    
+
  
     <platform name="android">
         <allow-intent href="market:*" />
