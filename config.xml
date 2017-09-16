@@ -55,8 +55,10 @@
     <!--<plugin name="cordova-plugin-media" source="npm" spec="~2.2.0" />-->
     <!--<plugin name="cordova-plugin-network-information" source="npm" spec="~1.2.0" />-->
     <!--<plugin name="cordova-plugin-contacts" source="npm" spec="~2.0.1" />-->
-
- 
+    
+    <gap:config-file platform="ios" parent="NSPhotoLibraryUsageDescription">
+        <string>Zum Hochladen von Wartungsfotos</string>
+    </gap:config-file>
     <platform name="android">
         <allow-intent href="market:*" />
         <icon density="ldpi" src="res/icon/android/drawable-ldpi-icon.png" />
