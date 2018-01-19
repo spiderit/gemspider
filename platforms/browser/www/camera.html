@@ -49,11 +49,11 @@
         }
         
         function accessCamera() {
-          navigator.camera.getPicture(camSuccess, camError, { quality: 75,
+          navigator.camera.getPicture(camSuccess, camError, { quality: 95,
             sourceType: Camera.PictureSourceType.CAMERA,
             destinationType: Camera.DestinationType.FILE_URI,
-            targetWidth: 1280,
-            targetHeight: 1280,
+            targetWidth: 1080,
+            targetHeight: 1080,
             encodingType: Camera.EncodingType.JPEG,
             allowEdit: false,
             correctOrientation: true,

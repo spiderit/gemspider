@@ -6,10 +6,9 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <!--<meta http-equiv="Content-Security-Policy" content="default-src * 'self' 'unsafe-inline' data: gap: 'unsafe-eval'; style-src * 'self' 'unsafe-inline'; connect-src * ; script-src * 'self' 'unsafe-inline'; media-src *" />-->
-    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; media-src *" />
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; media-src *" />
 	  <!--<meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=no">-->
     <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
-    
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#000000">
@@ -39,27 +38,6 @@
 
   <body>
     
-    <div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            <h4 class="modal-title" id="myModalLabel">Gallerie</h4>
-          </div>
-          <div class="modal-body">
-            <div id="gallery" style="display:none;">
-                <img alt="Image 1 Title" src="https://placehold.it/350x150" data-image="https://placehold.it/350x150" data-description="Image 1 Description">
-            </div> 
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default pull-left" id="fullscreen-gallery">Vollbild</button>
-            <button type="button" class="btn btn-default" data-dismiss="modal">Schliessen</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
     <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
       <div class="container-fluid">
         <div class="navbar-header">
@@ -228,13 +206,34 @@
           <div class="modal-body" id="feature-info"></div>
           <div class="modal-footer">
             <button type="button" class="btn btn-success pull-left" id="saveModal" data-dismiss="modal">Speichern</button>
-            <button type="button" class="btn btn-warning pull-left" onClick="accessCamera()" id="openCamera">Foto</button>
-            <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+            <button type="button" class="btn btn-warning pull-left" id="openCamera">Foto</button>
+            <button type="button" class="btn btn-default pull-left" id="openGallery">Galerie</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button> 
           </div>
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 
+    <div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="myModalLabel">Gallerie</h4>
+          </div>
+          <div class="modal-body" style="height: 400px;">
+            <div id="gallery" style="display:none;">
+                <img alt="Image 1 Title" src="https://placehold.it/350x150" data-image="https://placehold.it/350x150" data-description="Image 1 Description">
+            </div> 
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default pull-left" id="fullscreen-gallery">Vollbild</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Schliessen</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
     <div class="modal fade" id="attributionModal" tabindex="-1" role="dialog">
       <div class="modal-dialog">
         <div class="modal-content">

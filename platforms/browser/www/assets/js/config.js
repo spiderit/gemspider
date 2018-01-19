@@ -3,6 +3,8 @@
 /* global Mustache */
 
 var baseUrl = "https://qgem.at";
+var uploadServer = 'https://qgem.at/uploadservice';
+
 //var baseUrl = window.location.origin;
 var vectoropts = {};
 vectoropts.kanal = {
@@ -36,13 +38,14 @@ vectoropts.kanal = {
           var popup = L.popup({ closeOnClick : true }) 
           .setLatLng(coord)
           .setContent(Mustache.render(templateStammdaten[feature.layer.name] + 
-          '<br><a href="#" class="popuplink btn btn-default btn-xs" data-name="' + feature.properties.name + '">Fotos und Videos</a>', data[0]))
+          '<br><a href="#" class="popuplink btn btn-default btn-xs" data-value="' + feature.properties.id + '" data-key="' + feature.layer.name + '" data-wartungsart_id="58">Aufgabe anlegen</a>', data[0]))
           .openOn(feature.map);
         }
       }); 
     }
   },
-  
+
+
   style: function(feature) {
     var style = {};
     var selected = style.selected = {};
@@ -114,7 +117,7 @@ function createModalFields(e) {
           if (!(wartung).erfuellt_am)
             (wartung).erfuellt_am = moment().format('YYYY-MM-DD');
 
-          $("#feature-title").html(feature.properties.wartungsart + " für " + feature.properties.objekttyp + " " + feature.properties.objektname);
+          $("#feature-title").html(feature.properties.wartungsart + " für " + feature.properties.objektname);
           var template = '\
             <ul class="nav nav-pills"> \
               <li class="active"><a data-toggle="tab" href="#sectionA">Allgemein</a></li> \
@@ -147,7 +150,7 @@ function createModalFields(e) {
                 </div> \
                 <div class="form-group"> \
                   <label for="wetter" ">Wetter</label> \
-                  <select class="form-control" id="wetter"><option value="sonnig">sonnig</option><option value="bewölkt">bewölkt</option><option value="Niederschlag">Niederschlag</option></select> \
+                  <select class="form-control" id="wetter"><option value=""></option><option value="sonnig">sonnig</option><option value="bewölkt">bewölkt</option><option value="Niederschlag">Niederschlag</option></select> \
                 </div> \
                 <div class="form-group"> \
                   <label for="anmerkung" >Anmerkung</label> \
@@ -203,16 +206,27 @@ function createModalFields(e) {
           } 
           
           
-          $("#feature-info").find('option[value=' + wartung.status +']').attr('selected', true);
-          $("#feature-info").find('option[value=' + wartung.wetter +']').attr('selected', true);
+          $("#feature-info").find("option[value='" + wartung.status +"']").attr('selected', true);
+          $("#feature-info").find("option[value='" + wartung.wetter +"']").attr('selected', true);
 
           $("[name='my-checkbox']").bootstrapSwitch();
           $("#featureModal").modal("show");
           highlight.clearLayers().addLayer(L.circleMarker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], highlightStyle));
-          
-          $("#saveModal").off('click').on('click', function() {
-              // function body
+
+
+          $("#openCamera").off('click').on('click', function() {});
+          $("#openCamera").on('click', function() {
+              cameraModule.accessCamera(fachschale, feature.properties.id, feature.properties.objektname.substring(0, 12))
           });
+   
+          
+          $("#openGallery").off('click').on('click', function() {});
+          $("#openGallery").click(function() {
+            openGallery(fachschale, 'wartung_id', feature.properties.id);
+          });
+    
+          
+          $("#saveModal").off('click').on('click', function() {});
           $("#saveModal").click(function() {
             var wartung = {};
             $("#sectionA").find(":input").each(function() {

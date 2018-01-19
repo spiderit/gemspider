@@ -122,9 +122,9 @@ function login (e) {
           markerClusters.removeLayer(wartungen);
           wartungen.clearLayers();
           if (data[0].geojson.features) {
-            data[0].geojson.features = data[0].geojson.features.filter(function(feature) {
-              return feature.properties.typ === 'Wartung';
-            })
+            //data[0].geojson.features = data[0].geojson.features.filter(function(feature) {
+            //  return feature.properties.typ === 'Wartung';
+            //})
             wartungen.addData(data[0].geojson);
             markerClusters.addLayer(wartungen);
             if (!map.hasLayer(wartungenLayer)) {
@@ -324,11 +324,14 @@ var wartungen = L.geoJson(null, {
     return L.marker(latlng, {
       icon: L.icon({
         iconUrl: function () {
-          if(feature.properties.status === 1) {
-            return 'assets/img/marker-icon-green.png'
-          } else {
+          if(feature.properties.status === 0 && feature.properties.typ === 'Wartung') 
             return 'assets/img/marker-icon-blue.png'
-          };
+          if(feature.properties.status === 1 && feature.properties.typ === 'Wartung')
+            return 'assets/img/marker-icon-green.png'
+          if(feature.properties.status === 0 && feature.properties.typ === 'Aufgabe') 
+            return 'assets/img/marker-icon-blue2.png'
+          if(feature.properties.status === 1 && feature.properties.typ === 'Aufgabe') 
+            return 'assets/img/marker-icon-green2.png'
         }() ,
         iconSize: [25, 41],
         iconAnchor: [11, 41],
@@ -375,22 +378,47 @@ map = L.map("map", {
 
 map.on('popupopen', function() {
     $('.popuplink').click(function() {
-        var name = $(".popuplink").attr('data-name'); 
-        $.getJSON(baseUrl + "/dropbox/?path=/qgem/" + $("#projektnummer").val() + "/" + $("#fachschale").val() + "/" + name, function (images){
-          var galleryHtml = "";
-          for (var i = 0; i < images.length; i++) {
-            galleryHtml += '<img alt="' + name + '" src="https://placeholdit.imgix.net/~text?txtsize=35&txt=Spider&w=150&h=100" data-image="' + images[i].link + '" data-description="">';
-          }
-          $("#gallery").html(galleryHtml);
-  				$('#imagemodal').modal('show');
-	  			var apigallery = $("#gallery").unitegallery(); 
-	  			
-	  			$('#fullscreen-gallery').click(function() {
-	  			  apigallery.enterFullscreen();
-	  			});
-        });
+      var transfer = {};
+      transfer.value = $(".popuplink").attr('data-value'); 
+      transfer.key = $(".popuplink").attr('data-key'); 
+      transfer.wartungsart_id = $(".popuplink").attr('data-wartungsart_id'); 
+      $.ajax({
+        url: baseUrl + '/' + 'kanal' + '/rpc/create_aufgabe',
+        method: 'POST',
+        contentType: "application/json", // send as JSON
+        data: JSON.stringify(transfer),
+        success: function (data) {
+          if (data.features) {
+            wartungen.addData(data);
+            markerClusters.addLayer(wartungen);
+            if (!map.hasLayer(wartungenLayer)) {
+              map.addLayer(wartungenLayer);   
+            };
+            syncSidebar();
+          };
+        },
+        error: function (error) {
+          console.log('Fehler beim Hinzufügen einer Aufgabe');
+        }
+      });
     });
 });
+
+function openGallery(fachschale, key, value) {
+  var url = uploadServer + '/list?schema=' + fachschale + '&key=' + key + '&value=' + value;
+  $.getJSON(url, function (images){
+    var galleryHtml = "";
+    for (var i = 0; i < images.length; i++) {
+      galleryHtml += '<img alt="" src="https://placeholdit.imgix.net/~text?txtsize=35&txt=Spider&w=150&h=100" data-image="' + uploadServer + '/download?dateiname=' + images[i].dateiname + '" data-description="">';
+    }
+    $("#gallery").html(galleryHtml);
+		$('#imagemodal').modal('show');
+		var apigallery = $("#gallery").unitegallery({gallery_width:"100%",gallery_height:"100%"}); 
+		$('#fullscreen-gallery').click(function() {
+		  apigallery.enterFullscreen();
+		});
+  });
+}
 
 /* Layer control listeners that allow for a single markerClusters layer */
 map.on("overlayadd", function(e) {
