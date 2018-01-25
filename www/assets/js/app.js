@@ -6,7 +6,7 @@
 
 
 
-var map, featureList, wartungenSearch = [];
+var map, featureList, wartungenSearch = [], wartungsArten;
 
 
 $(document).ready(function() {
@@ -100,7 +100,11 @@ function login (e) {
             $("#ueberschrift").html(data[0].name);
             document.title = 'Spider - ' + data[0].name;
           }
-        });    
+        }); 
+        // Load Wartungsarten
+        $.getJSON(baseUrl + "/" + qgemSettings.fachschale + "/wartungsarten?app=is.true", function (data) {
+            wartungsArten = data;
+        }); 
         
         // Vector Tiles
         var qgemRole = $("#projektnummer").val() + '_' + $("#fachschale").val() + '_manager';
@@ -310,11 +314,15 @@ var highlightStyle = {
 
 /* Single marker cluster layer to hold all clusters */
 var markerClusters = new L.MarkerClusterGroup({
+  maxClusterRadius: function(zoom) { 
+    return (zoom <= 16) ? 80 : 1; // radius in pixels 
+  },
   spiderfyOnMaxZoom: true,
   showCoverageOnHover: false,
   zoomToBoundsOnClick: true,
-  disableClusteringAtZoom: 16
-});
+  spiderfyDistanceMultiplier: 1.5
+  });
+
 
     
 /* Empty layer placeholder to add to layer control for listening when to add/remove wartungen to markerClusters layer */
@@ -324,13 +332,13 @@ var wartungen = L.geoJson(null, {
     return L.marker(latlng, {
       icon: L.icon({
         iconUrl: function () {
-          if(feature.properties.status === 0 && feature.properties.typ === 'Wartung') 
+          if(feature.properties.status == 0 && feature.properties.typ == 'Wartung') 
             return 'assets/img/marker-icon-blue.png'
-          if(feature.properties.status === 1 && feature.properties.typ === 'Wartung')
+          if(feature.properties.status == 1 && feature.properties.typ == 'Wartung')
             return 'assets/img/marker-icon-green.png'
-          if(feature.properties.status === 0 && feature.properties.typ === 'Aufgabe') 
+          if(feature.properties.status == 0 && feature.properties.typ == 'Aufgabe') 
             return 'assets/img/marker-icon-blue2.png'
-          if(feature.properties.status === 1 && feature.properties.typ === 'Aufgabe') 
+          if(feature.properties.status == 1 && feature.properties.typ == 'Aufgabe') 
             return 'assets/img/marker-icon-green2.png'
         }() ,
         iconSize: [25, 41],
@@ -376,14 +384,16 @@ map = L.map("map", {
   attributionControl: false
 });
 
+// Aufgabe oder Wartung anlegen
 map.on('popupopen', function() {
     $('.popuplink').click(function() {
       var transfer = {};
       transfer.value = $(".popuplink").attr('data-value'); 
       transfer.key = $(".popuplink").attr('data-key'); 
       transfer.wartungsart_id = $(".popuplink").attr('data-wartungsart_id'); 
+      transfer.wartungsart_id = $('#wartungsart_id').val();
       $.ajax({
-        url: baseUrl + '/' + 'kanal' + '/rpc/create_aufgabe',
+        url: baseUrl + '/' + $("#fachschale").val() + '/rpc/create_aufgabe',
         method: 'POST',
         contentType: "application/json", // send as JSON
         data: JSON.stringify(transfer),
@@ -395,6 +405,7 @@ map.on('popupopen', function() {
               map.addLayer(wartungenLayer);   
             };
             syncSidebar();
+            map.closePopup();
           };
         },
         error: function (error) {

@@ -3,6 +3,7 @@
 /* global Mustache */
 
 var baseUrl = "https://qgem.at";
+//var uploadServer = 'https://externalfiles-franzgusenbauer.c9users.io';
 var uploadServer = 'https://qgem.at/uploadservice';
 
 //var baseUrl = window.location.origin;
@@ -37,8 +38,9 @@ vectoropts.kanal = {
         if (data.length > 0) {
           var popup = L.popup({ closeOnClick : true }) 
           .setLatLng(coord)
-          .setContent(Mustache.render(templateStammdaten[feature.layer.name] + 
-          '<br><a href="#" class="popuplink btn btn-default btn-xs" data-value="' + feature.properties.id + '" data-key="' + feature.layer.name + '" data-wartungsart_id="58">Aufgabe anlegen</a>', data[0]))
+          .setContent(Mustache.render(templateStammdaten[feature.layer.name], data[0]) 
+          + Mustache.render('<br><b>Wartung/Aufgabe:</b><br><select id="wartungsart_id">{{#.}}<option value="{{id}}">{{name}}</option>{{/.}}</select>', wartungsArten)
+          + '<a href="#" class="popuplink btn btn-default btn-xs" data-value="' + feature.properties.id + '" data-key="' + feature.layer.name + '">Hinzufügen</a>')
           .openOn(feature.map);
         }
       }); 
@@ -267,7 +269,16 @@ function createModalFields(e) {
                   }
                 });
                 var marker = ['assets/img/marker-icon-blue.png', 'assets/img/marker-icon-green.png'];
-                e.target.defaultOptions.icon.options.iconUrl = marker[wartung.status];
+                e.target.defaultOptions.icon.options.iconUrl =  function () {
+                  if(wartung.status == 0 && feature.properties.typ == 'Wartung') 
+                    return 'assets/img/marker-icon-blue.png'
+                  if(wartung.status == 1 && feature.properties.typ == 'Wartung')
+                    return 'assets/img/marker-icon-green.png'
+                  if(wartung.status == 0 && feature.properties.typ == 'Aufgabe') 
+                    return 'assets/img/marker-icon-blue2.png'
+                  if(wartung.status == 1 && feature.properties.typ == 'Aufgabe') 
+                    return 'assets/img/marker-icon-green2.png'
+                }();
                 e.target.setIcon(e.target.defaultOptions.icon);
               }
             });
@@ -302,8 +313,9 @@ vectoropts.wasser = {
         if (data.length > 0) {
           var popup = L.popup({ closeOnClick : true }) 
           .setLatLng(coord)
-          .setContent(Mustache.render(templateStammdaten[feature.layer.name] + 
-          '<br><b>Fotos und Videos: </b><a href="#" class="popuplink" data-name="' + feature.properties.name + '">Öffnen</a>', data[0]))
+          .setContent(Mustache.render(templateStammdaten[feature.layer.name], data[0]) 
+          + Mustache.render('<br><b>Wartung/Aufgabe:</b><br><select id="wartungsart_id">{{#.}}<option value="{{id}}">{{name}}</option>{{/.}}</select>', wartungsArten)
+          + '<a href="#" class="popuplink btn btn-default btn-xs" data-value="' + feature.properties.id + '" data-key="' + feature.layer.name + '">Hinzufügen</a>')
           .openOn(feature.map);
         }
       }); 
@@ -383,3 +395,4 @@ function getQueryVariable(variable)
        }
        return(false);
 }
+//test
