@@ -39,7 +39,7 @@ vectoropts.kanal = {
           var popup = L.popup({ closeOnClick : true }) 
           .setLatLng(coord)
           .setContent(Mustache.render(templateStammdaten[feature.layer.name], data[0]) 
-          + Mustache.render('<br><b>Wartung/Aufgabe:</b><br><select id="wartungsart_id">{{#.}}<option value="{{id}}">{{name}}</option>{{/.}}</select>', wartungsArten)
+          + Mustache.render('<br><b>Aufgabe:</b><br><select id="wartungsart_id">{{#.}}<option value="{{id}}">{{name}}</option>{{/.}}</select>', wartungsArten)
           + '<a href="#" class="popuplink btn btn-default btn-xs" data-value="' + feature.properties.id + '" data-key="' + feature.layer.name + '">Hinzufügen</a>')
           .openOn(feature.map);
         }
@@ -108,7 +108,7 @@ function createModalFields(e) {
     var fachschale = $("#fachschale").val();
     if (e.target.feature) {
       var feature =  e.target.feature;
-      $.getJSON(baseUrl + "/" + fachschale + "/wartungen?id=eq." + feature.properties.id + "&select=*,wartungsparameterwerte{*,wartungsparameter_id{*}}&wartungsparameterwerte.order=wartungsparameter_id.sortierung.asc", function (data) {
+      $.getJSON(baseUrl + "/" + fachschale + "/wartungen?id=eq." + feature.properties.id + "&select=*,wartungsart_id{*},wartungsparameterwerte{*,wartungsparameter_id{*}}&wartungsparameterwerte.order=wartungsparameter_id.sortierung.asc", function (data) {
         if (data.length > 0) {
           var wartung = data[0];
           wartung.checkWert = function () {
@@ -119,7 +119,7 @@ function createModalFields(e) {
           if (!(wartung).erfuellt_am)
             (wartung).erfuellt_am = moment().format('YYYY-MM-DD');
 
-          $("#feature-title").html(feature.properties.wartungsart + " für " + feature.properties.objektname);
+          $("#feature-title").html(wartung.wartungsart_id.typ + ": " + feature.properties.wartungsart + " für " + feature.properties.objektname);
           var template = '\
             <ul class="nav nav-pills"> \
               <li class="active"><a data-toggle="tab" href="#sectionA">Allgemein</a></li> \
@@ -167,7 +167,7 @@ function createModalFields(e) {
                 <form class="form">{{#wartungsparameterwerte}} \
                   <div class="form-group" id="folgetaetigkeit_{{id}}"> \
                     <label for="{{id}}" class="control-label" >{{wartungsparameter_id.name}}</label> \
-                    <select class="form-control" data-selected="{{folgetaetigkeit}}" id="folgetaetigkeit_select_{{id}}"><option value="-"></option><option value="Inspektion">Inspektion</option><option value="Reinigung">Reinigung</option><option value="Sanierung">Sanierung</option>{{folgetaetigkeit}}</select> \
+                    <select class="form-control" data-selected="{{folgetaetigkeit}}" id="folgetaetigkeit_select_{{id}}"><option value="-"></option><option value="Nachkontrolle">Nachkontrolle</option><option value="Inspektion">Inspektion</option><option value="Reinigung">Reinigung</option><option value="Sanierung">Sanierung</option><option value="Instandsetzung">Instandsetzung</option>{{folgetaetigkeit}}</select> \
                   </div> \
                 {{/wartungsparameterwerte}} </form> \
                 <div class="form-group"> <br><hr>\
@@ -183,6 +183,10 @@ function createModalFields(e) {
     
 
           $("#feature-info").html(Mustache.render(template, wartung));
+          if (wartung.wartungsart_id.typ === "Aufgabe") {
+            $("#funktion-gerinne-schacht").hide(); 
+          }
+          
           // Selected Option
           $('[data-selected]').find("option").filter(function() {
             return $(this).text() == $(this).parent().data('selected');  
@@ -215,12 +219,15 @@ function createModalFields(e) {
           $("#featureModal").modal("show");
           highlight.clearLayers().addLayer(L.circleMarker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], highlightStyle));
 
+          if (navigator.camera) {
+            $("#openCamera").off('click').on('click', function() {});
+            $("#openCamera").on('click', function() {
+                cameraModule.accessCamera(fachschale, feature.properties.id, feature.properties.objektname.substring(0, 12))
+            });            
+          } else {
+            $( "#openCamera" ).hide();
+          }
 
-          $("#openCamera").off('click').on('click', function() {});
-          $("#openCamera").on('click', function() {
-              cameraModule.accessCamera(fachschale, feature.properties.id, feature.properties.objektname.substring(0, 12))
-          });
-   
           
           $("#openGallery").off('click').on('click', function() {});
           $("#openGallery").click(function() {
@@ -314,7 +321,7 @@ vectoropts.wasser = {
           var popup = L.popup({ closeOnClick : true }) 
           .setLatLng(coord)
           .setContent(Mustache.render(templateStammdaten[feature.layer.name], data[0]) 
-          + Mustache.render('<br><b>Wartung/Aufgabe:</b><br><select id="wartungsart_id">{{#.}}<option value="{{id}}">{{name}}</option>{{/.}}</select>', wartungsArten)
+          + Mustache.render('<br><b>Aufgabe:</b><br><select id="wartungsart_id">{{#.}}<option value="{{id}}">{{name}}</option>{{/.}}</select>', wartungsArten)
           + '<a href="#" class="popuplink btn btn-default btn-xs" data-value="' + feature.properties.id + '" data-key="' + feature.layer.name + '">Hinzufügen</a>')
           .openOn(feature.map);
         }
@@ -373,7 +380,7 @@ vectoropts.wasser = {
     if (feature.layer.name === 'einbauten' || feature.layer.name === 'sonstigeanlagen' || feature.layer.name === 'wasseraufbereitungsanlagen' || feature.layer.name === 'wasserspeicherbauwerke') {
       style.staticLabel = function() {
       var style = {
-        html: feature.properties.nummer,
+        html: feature.properties.art,
         iconSize: [-15, 5],
         cssClass: 'label-icon-text'
       };
@@ -395,4 +402,3 @@ function getQueryVariable(variable)
        }
        return(false);
 }
-//test

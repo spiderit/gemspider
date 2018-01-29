@@ -531,7 +531,7 @@ var baseLayers = {
 
 var groupedOverlays = {
   "Wartungen": {
-    "<img src='assets/img/wartungen.png' width='16' height='26'>&nbsp;Wartung": wartungenLayer
+    "<img src='assets/img/wartungen.png' width='16' height='26'>&nbsp;Wartung/Aufgabe": wartungenLayer
   },
   "Kanalnetz": {
     "Netz": mvtSource
