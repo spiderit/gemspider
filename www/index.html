@@ -205,10 +205,21 @@
           </div>
           <div class="modal-body" id="feature-info"></div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-success pull-left" id="saveModal" data-dismiss="modal">Speichern</button>
-            <button type="button" class="btn btn-warning pull-left" id="openCamera">Foto</button>
-            <button type="button" class="btn btn-default pull-left" id="openGallery">Galerie</button>
-            <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button> 
+            <button type="button" class="btn btn-success pull-left" id="saveModal" data-dismiss="modal">
+              <span style="font-size:24px" class="glyphicon glyphicon-floppy-disk"></span>
+            </button>
+            <button type="button" class="btn btn-warning pull-left" id="openCamera">
+                <span style="font-size:24px" class="glyphicon glyphicon-camera"></span>
+            </button>
+            <button type="button" class="btn btn-primary pull-left" id="openGallery">
+                <span style="font-size:24px" class="glyphicon glyphicon-picture"></span>            
+            </button>
+            <button type="button" class="btn btn pull-right" data-dismiss="modal">
+                <span style="font-size:24px" class="glyphicon glyphicon-log-out"></span> 
+            </button> 
+            <button type="button" class="btn btn-danger pull-right" id="deleteModal" data-dismiss="modal">
+                <span style="font-size:24px" class="glyphicon glyphicon-trash"></span>            
+            </button>
           </div>
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->

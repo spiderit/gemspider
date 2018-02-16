@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="at.spider-it.gemspider" version="1.0.2" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
+<widget id="at.spider-it.gemspider" version="1.0.3" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
     <name>gemspider</name>
     <description>
         gemspider - spielend deine Netze betreiben
@@ -31,7 +31,18 @@
     <preference name="ShowSplashScreenSpinner" value="false"/>
     <preference name="SplashScreen" value="splash"/>
 
-
+    <!--Änderung Camera Permission IOS 2018-02-08 -->
+    <plugin name="cordova-plugin-ios-camera-permissions" >
+         <variable name="CAMERA_USAGE_DESCRIPTION" value="Zum Hochladen von Wartungsfotos" />
+         <variable name="PHOTOLIBRARY_USAGE_DESCRIPTION" value="Zum Hochladen von Wartungsfotos" />
+    </plugin><!-- spec="1.0.3" !-->
+    
+    <plugin name="cordova-plugin-camera" spec="~2.1.1" >
+         <variable name="CAMERA_USAGE_DESCRIPTION" value="Zum Hochladen von Wartungsfotos" />
+         <variable name="PHOTOLIBRARY_USAGE_DESCRIPTION" value="Zum Hochladen von Wartungsfotos" />
+    </plugin>
+    <!--Änderung Camera Permission IOS 2018-02-08 -->
+    
     <plugin name="cordova-plugin-console" source="npm" spec="~1.0.2" />
     <plugin name="cordova-plugin-device" source="npm" spec="~1.1.1" />
     <plugin name="cordova-plugin-device-motion" source="npm" spec="~1.2.0" />
@@ -44,7 +55,6 @@
     <plugin name="cordova-plugin-statusbar" source="npm" spec="~2.1.2" />
     <plugin name="cordova-plugin-vibration" source="npm" spec="~2.1.0" />
     <plugin name="cordova-plugin-whitelist" source="npm" spec="~1.2.1" />
-    <plugin name="cordova-plugin-camera" spec="~2.1.1" />
     <!--<plugin name="cordova-plugin-crosswalk-webview" spec="~2.3.0" />-->
     <!--<plugin name="cordova-plugin-battery-status" source="npm" spec="~1.1.1" />-->
     <!--<plugin name="cordova-plugin-media-capture" source="npm" spec="~1.2.0" />-->

@@ -340,6 +340,8 @@ var wartungen = L.geoJson(null, {
             return 'assets/img/marker-icon-blue2.png'
           if(feature.properties.status == 1 && feature.properties.typ == 'Aufgabe') 
             return 'assets/img/marker-icon-green2.png'
+        
+          return 'assets/img/marker-icon-blue.png';
         }() ,
         iconSize: [25, 41],
         iconAnchor: [11, 41],

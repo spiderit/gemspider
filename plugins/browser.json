@@ -66,6 +66,9 @@
         },
         "cordova-plugin-crosswalk-webview": {
             "PACKAGE_NAME": "com.gusenbauer.camera-app"
+        },
+        "cordova-plugin-ios-camera-permissions": {
+            "PACKAGE_NAME": "at.spider-it.gemspider"
         }
     },
     "dependent_plugins": {

@@ -29,9 +29,9 @@ vectoropts.kanal = {
   onClick: function(e) {
     if (e.feature) {
       var templateStammdaten = {};
-      templateStammdaten.schaechte = '<h4>Schacht</h4><b>Schacht Nr.:</b> {{schachtnummer}}<br><b>Strang:</b> {{strang}}<br><b>Entwässerungssystem:</b> {{entwaesserungssystem}}<br><b>Deckeloberkante [m]:</b> {{deckeloberkante}}<br><b>Sohlhöhe [m]:</b> {{sohlhoehe}}<br><b>Abstich [m]:</b> {{abstich}}<br><b>letzte Überprüfung:</b> {{ueberpfuefung}}<br><b>Bezeichnung:</b> {{bezeichnung}}<br><b>Name:</b> {{name}}<br><b>Anmerkung:</b> {{anmerkung}}';
-      templateStammdaten.haltungen = '<h4>Haltung</h4><b>Strang:</b> {{strang}}<br><b>Schacht:</b> {{schacht}}<br><b>Entwässerungssystem:</b> {{entwaesserungssystem}}<br><b>Haltungsmaterial:</b> {{haltungsmaterial}}<br><b>DN/Breite [mm]:</b> {{breite}}<br><b>Länge [m]:</b> {{laenge}}<br><b>Gefälle [‰]:</b> {{gefaelle}}<br><b>letzte Überprüfung:</b> {{ueberpfuefung}}<br><b>Abwasserart:</b> {{abwasserart}}<br><b>Bezeichnung:</b> {{bezeichnung}}<br><b>Name:</b> {{name}}<br><b>Anmerkung:</b> {{anmerkung}}';
-      templateStammdaten.sonderbauwerke = '<h4>Sonderbauwerk</h4><b>Name:</b> {{name}}<br><b>Bezeichnung:</b> {{bezeichnung}}<br><b>Sonderbauwerkstyp:</b> {{sonderbauwerkstyp}}<br><b>Länge [m]:</b> {{laenge}}<br><b>Breite [m]:</b> {{breite}}<br><b>Höhe [m]:</b> {{hoehe}}<br><b>Anmerkung:</b> {{anmerkung}}';
+      templateStammdaten.schaechte = '<h4>Schacht</h4><b>Schacht Nr.:</b> {{bezeichnung}}<br><b>Strang:</b> {{strang}}<br><b>Entwässerungssystem:</b> {{entwaesserungssystem}}<br><b>Deckeloberkante [m]:</b> {{deckeloberkante}}<br><b>Sohlhöhe [m]:</b> {{sohlhoehe}}<br><b>Abstich [m]:</b> {{abstich}}<br><b>letzte Überprüfung:</b> {{ueberpfuefung}}<br><b>Bezeichnung:</b> {{bezeichnung}}<br><b>Name:</b> {{name}}<br><b>Anmerkung:</b> {{anmerkung}}';
+      templateStammdaten.haltungen = '<h4>Haltung</h4><b>Strang:</b> {{strang}}<br><b>Bezeichnung:</b> {{bezeichnung}}<br><b>Schacht:</b> {{schacht}}<br><b>Entwässerungssystem:</b> {{entwaesserungssystem}}<br><b>Haltungsmaterial:</b> {{haltungsmaterial}}<br><b>DN/Breite [mm]:</b> {{breite}}<br><b>Länge [m]:</b> {{laenge}}<br><b>Gefälle [‰]:</b> {{gefaelle}}<br><b>letzte Überprüfung:</b> {{ueberpfuefung}}<br><b>Abwasserart:</b> {{abwasserart}}<br><b>Name:</b> {{name}}<br><b>Anmerkung:</b> {{anmerkung}}';
+      templateStammdaten.sonderbauwerke = '<h4>Sonderbauwerk</h4><b>Name:</b> {{bezeichnung}}<br><b>Bezeichnung:</b> {{bezeichnung}}<br><b>Sonderbauwerkstyp:</b> {{sonderbauwerkstyp}}<br><b>Länge [m]:</b> {{laenge}}<br><b>Breite [m]:</b> {{breite}}<br><b>Höhe [m]:</b> {{hoehe}}<br><b>Anmerkung:</b> {{anmerkung}}';
       var coord = e.latlng;
       var feature =  e.feature;
       $.getJSON(baseUrl + "/kanal/" + feature.layer.name + "_tabelle?id=eq." + feature.properties.id, function (data) {
@@ -92,7 +92,7 @@ vectoropts.kanal = {
     if ((feature.layer.name === 'schaechte' && feature.properties.art === 'Hauptschacht') || feature.layer.name === 'sonderbauwerke') {
       style.staticLabel = function() {
       var style = {
-        html: feature.properties.nummer,
+        html: feature.properties.bezeichnung,
         iconSize: [-15, 5],
         cssClass: 'label-icon-text'
       };
@@ -119,7 +119,7 @@ function createModalFields(e) {
           if (!(wartung).erfuellt_am)
             (wartung).erfuellt_am = moment().format('YYYY-MM-DD');
 
-          $("#feature-title").html(wartung.wartungsart_id.typ + ": " + feature.properties.wartungsart + " für " + feature.properties.objektname);
+          $("#feature-title").html(wartung.wartungsart_id.typ + ": " + feature.properties.wartungsart + " für " + feature.properties.bezeichnung);
           var template = '\
             <ul class="nav nav-pills"> \
               <li class="active"><a data-toggle="tab" href="#sectionA">Allgemein</a></li> \
@@ -183,6 +183,10 @@ function createModalFields(e) {
     
 
           $("#feature-info").html(Mustache.render(template, wartung));
+          if (wartung.wartungsart_id.typ === "Aufgabe") {
+            $("#funktion-gerinne-schacht").hide(); 
+          }
+          
           // Selected Option
           $('[data-selected]').find("option").filter(function() {
             return $(this).text() == $(this).parent().data('selected');  
@@ -229,7 +233,34 @@ function createModalFields(e) {
           $("#openGallery").click(function() {
             openGallery(fachschale, 'wartung_id', feature.properties.id);
           });
-    
+
+          $("#deleteModal").off('click').on('click', function() {});
+          $("#deleteModal").click(function() {
+            if (feature.properties.id !== parseInt(feature.properties.id, 10)) {
+              return false;
+            }
+            if (confirm('Soll das Element gelöscht werden?') == false) {
+              return false;
+            }
+            $.ajax({
+              url: baseUrl + '/' + fachschale + '/wartungen?id=eq.' + feature.properties.id,
+              method: 'DELETE',
+              success: function (data) {
+                Object.keys(wartungen._layers).forEach(function (k) {
+                  if (wartungen._layers[k].feature.properties.id == feature.properties.id) {
+                    markerClusters.removeLayer(wartungen._layers[k])
+                    //markerClusters._markerCluster.remove(wartungen._layers[k]);
+                    map.removeLayer(wartungen._layers[k]);
+                    delete wartungen._layers[k];
+                    syncSidebar();
+                  }
+                });
+              },
+              error: function (error) {
+                alert('Element konnte nicht gelöscht werden!')
+              }
+            });
+          });
           
           $("#saveModal").off('click').on('click', function() {});
           $("#saveModal").click(function() {
